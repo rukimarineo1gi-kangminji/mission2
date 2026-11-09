@@ -35,4 +35,14 @@ if __name__ == "__main__":
         print("-" * 30)
 
     # 모든 문제가 끝난 후 최종 점수 발표
-    print(f"게임 종료! 당신의 점수는 {score}/{len(quiz_list)}점입니다.")
+    print("\n" + "="*40)
+    print("🎉 모든 퀴즈가 끝났습니다! 🎉")
+    print(f"당신의 최종 점수는 {score} / {len(quiz_list) * 10}점입니다.")
+
+        if score == len(quiz_list) * 10:
+            print("와우! 만점입니다! 당신은 진정한 영화 전문가! 🎬")
+        elif score >= (len(quiz_list) * 10) / 2:
+            print("오~ 제법인데요? 영화를 좋아하시는군요! 👍")
+        else:
+            print("아쉽네요! 영화를 좀 더 보셔야겠어요! 😊")
+            print("="*40)
