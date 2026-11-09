@@ -120,7 +120,13 @@ class QuizGame:
             else:
                 print("⚠️ 1번부터 5번 사이의 숫자를 입력해 주세요.")
 
-# 프로그램 시작점
 if __name__ == "__main__":
+    # 1. 게임 객체 생성
     game = QuizGame()
-    game.run()
+    
+    # 2. 게임 시작 (메뉴 호출)
+    try:
+        game.run()
+    except KeyboardInterrupt:
+        print("\n\n게임을 종료합니다. 다음에 또 만나요! 👋")
+    
