@@ -12,46 +12,51 @@ class Quiz:
 # [2] 게임 전체를 관리하는 '관리자'입니다.
 class QuizGame:
     def __init__(self):
-        self.quizzes = []        # 퀴즈 목록을 담을 바구니
-        self.best_score = 0      # 최고 점수
-        self.file_path = "state.json" # 데이터를 저장할 파일 이름
-        self.load_data()         # 시작하자마자 기존 데이터를 불러옵니다.
+        self.quizzes = []           # 퀴즈 목록 바구니
+        self.best_score = 0         # 최고 점수
+        
+        # 파일 경로를 두 개로 나눕니다!
+        self.quiz_file = "movies.json"   # [읽기 전용] 문제들이 들어있는 곳
+        self.state_file = "state.json"   # [쓰기 가능] 내 점수를 저장할 곳
+        
+        self.load_data()            # 시작하자마자 데이터를 불러옵니다.
 
     def load_data(self):
-        """저장된 데이터를 불러오는 기능"""
-        if os.path.exists(self.file_path):
+        """두 개의 파일에서 각각 문제와 점수를 불러옵니다."""
+
+        # 1. movies.json(문제 파일) 불러오기
+        if os.path.exists(self.quiz_file):
             try:
-                with open(self.file_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    self.best_score = data.get("best_score", 0)
-                    # 저장된 딕셔너리 데이터를 다시 Quiz 객체로 바꿉니다.
-                    self.quizzes = [Quiz(**q) for q in data.get("quizzes", [])]
-            except:
-                self.set_default_quizzes()
+                with open(self.quiz_file, 'r', encoding='utf-8') as f:
+                    quiz_data = json.load(f)
+                    # 파일에 있는 리스트를 Quiz 객체 리스트로 변환
+                    self.quizzes = [Quiz(**q) for q in quiz_data]
+            except Exception as e:
+                print(f"문제 로딩 중 오류 발생: {e}")
+                self.quizzes = []
         else:
-            self.set_default_quizzes()
+            print("movies.json 파일이 없습니다!")
 
-    def set_default_quizzes(self):
-        """민지님이 만든 10개의 퀴즈 데이터를 기본값으로 설정합니다."""
-        self.quizzes = [
-            Quiz("겨울왕국", "눈사람의 이름은?", ["올라프", "스벤", "크리스토프", "한스"], 1),
-            Quiz("어벤져스", "아이언맨의 본명은?", ["브루스 배너", "스티브 로저스", "토니 스타크", "토르"], 3),
-            Quiz("기생충", "기생충의 감독 이름은?", ["박찬욱", "봉준호", "이창동", "홍상수"], 2),
-            Quiz("알라딘", "램프 요정의 이름은?", ["자파", "이아고", "아부", "지니"], 4),
-            Quiz("타이타닉", "여주인공의 이름은?", ["로즈", "엘사", "나탈리", "엠마"], 1),
-            Quiz("아이언맨", "주인공 '토니 스타크'가 직접 만든 슈트의 이름은?", ["자비스", "울트론", "마크", "헐크버스터"], 3),
-            Quiz("겨울왕국", "안나의 언니이자 얼음 마법을 쓰는 주인공은?", ["엘사", "안나", "올라프", "이두나"], 1),
-            Quiz("기생충", "'너는 계획이 다 있구나'라는 명대사가 나온 영화는?", ["괴물", "마더", "설국열차", "기생충"], 4),
-            Quiz("어벤져스", "타노스가 사용한 장갑의 이름은?", ["인피니티 건틀렛", "나노 건틀렛", "파워 건틀렛", "아이언 건틀렛"], 1),
-            Quiz("해리포터", "해리의 이마에 있는 흉터 모양은?", ["별", "달", "번개", "구름"], 3)
-        ]
+        # 2. state.json(점수 파일) 불러오기
+        if os.path.exists(self.state_file):
+            try:
+                with open(self.state_file, 'r', encoding='utf-8') as f:
+                    state_data = json.load(f)
+                    self.best_score = state_data.get("best_score", 0)
+            except:
+                self.best_score = 0
 
+   
     def save_data(self):
-        """현재 상태(퀴즈, 점수)를 파일에 저장하는 기능"""
-        data = {
-            "best_score": self.best_score,
-            "quizzes": [q.__dict__ for q in self.quizzes]
+        """최고 점수를 state.json 파일에 저장합니다."""
+        # 저장할 데이터 구조 (점수만 저장)
+        state_data = {
+            "best_score": self.best_score
         }
+        # self.file_path 대신 self.state_file을 사용합니다!
+        with open(self.state_file, 'w', encoding='utf-8') as f:
+            json.dump(state_data, f, ensure_ascii=False, indent=4)
+        
         with open(self.file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
@@ -78,7 +83,27 @@ class QuizGame:
                 print(f"아쉽네요. 정답은 {q.answer}번입니다. 😢")
         
         print(f"\n✅ 모든 문제를 풀었습니다! 당신의 점수는 {score}점입니다.")
+
+    def add_quiz(self):
+        """[메뉴 2] 새로운 퀴즈를 추가하는 기능"""
+        print("\n🆕 새로운 퀴즈를 추가합니다.")
+        movie_title = input("영화 제목: ").strip()
+        question = input("문제 내용: ").strip()
+        choices = []
+        for i in range(1, 5):
+            choices.append(input(f"보기 {i}: ").strip())
+        answer = int(input("정답 번호 (1-4): ").strip())
+
+        new_quiz = Quiz(movie_title, question, choices, answer)
+        self.quizzes.append(new_quiz)
         
+        # 추가된 퀴즈를 movies.json에 저장
+        quiz_list = [q.__dict__ for q in self.quizzes]
+        with open(self.quiz_file, 'w', encoding='utf-8') as f:
+            json.dump(quiz_list, f, ensure_ascii=False, indent=4)
+        print("✅ 퀴즈가 성공적으로 추가되었습니다!")
+        
+
         # 최고 점수 갱신 확인
         if score > self.best_score:
             print(f"🎊 축하합니다! 최고 점수 경신! ({self.best_score} -> {score})")
@@ -98,7 +123,7 @@ class QuizGame:
             print("        🎬 영화 퀴즈 게임 🎬")
             print("="*40)
             print("1. 퀴즈 풀기")
-            print("2. 퀴즈 추가 (준비 중)")
+            print("2. 퀴즈 추가")
             print("3. 퀴즈 목록 보기")
             print("4. 최고 점수 확인")
             print("5. 종료")
@@ -109,7 +134,7 @@ class QuizGame:
             if choice == '1':
                 self.play_quiz()
             elif choice == '2':
-                print("\n(아직 개발 중인 기능입니다. 조금만 기다려주세요!)")
+                self.add_quiz()
             elif choice == '3':
                 self.show_list()
             elif choice == '4':
