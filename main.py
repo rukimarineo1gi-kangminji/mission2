@@ -24,7 +24,7 @@ if __name__ == "__main__":
     # 반복문(for)을 사용하여 리스트 안의 문제를 하나씩 꺼냅니다.
     for quiz in quiz_list:
         print(f"[{quiz.movie_title}] 문제: {quiz.question}")
-        user_input = input("정답을 입력하세요: ").strip()
+        user_input = input("정답을 입력하세요: ").strip().lower() # 공백 제거 및 소문자 변환
 
         if user_input == quiz.answer:
             print("정답입니다! 🎉")
