@@ -31,8 +31,12 @@ if __name__ == "__main__":
         print(f"\n[{i+1}번 문제] [{quiz.movie_title}] 문제: {quiz.question}")
         user_input = input("정답을 입력하세요: ").strip().lower() # 공백 제거 및 소문자 변환
 
+        # 💡 [수정] 입력값과 정답 모두에서 공백(" ")을 제거하고 비교합니다!
+        clean_user_input = user_input.replace(" ", "")
+        clean_answer = quiz.answer.lower().replace(" ", "")
+
         # 정답 비교 로직
-        if user_input == quiz.answer.lower():
+        if clean user_input == clean_answer:
             print("정답입니다! 🎉")
             score += 1
         else:
