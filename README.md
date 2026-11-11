@@ -247,11 +247,14 @@ Git을 활용하여 기능 단위로 작업 내용을 기록하였으며, 체계
  ### 11-1. 브랜치 병합
 
 ```bash
- # 새 브런치 생성
-git checkout -b feature/readme-update
+# 새 브런치 생성
+$ git checkout -b feature/readme-update
 
- # 수정사항 저장하기
+# 수정사항 저장하기
+$ git add README.md
+$ git commit -m "Docs: 브랜치 병합 테스트를 위한 README 수정"
 
+# 
 
 ```
 
